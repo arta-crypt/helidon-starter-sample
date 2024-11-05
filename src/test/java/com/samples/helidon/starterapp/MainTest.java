@@ -1,33 +1,55 @@
-
 package com.samples.helidon.starterapp;
 
+import io.helidon.metrics.api.MetricsFactory;
+import io.helidon.microprofile.testing.junit5.HelidonTest;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
-
-import io.helidon.microprofile.testing.junit5.HelidonTest;
-import io.helidon.metrics.api.MetricsFactory;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
+/**
+ * MainTest クラスは、REST API のエンドポイントをテストします。
+ * REST API のさまざまなエンドポイントに対して HTTP リクエストを行い、
+ * 期待されるレスポンスが返されるかどうかを検証します。
+ *
+ * @author arta-crypt
+ */
 @HelidonTest
 class MainTest {
 
+    /**
+     * メトリクスレジストリのインスタンスを保持します。
+     */
     @Inject
     private MetricRegistry registry;
 
+    /**
+     * WebTarget のインスタンスを保持します。REST API のエンドポイントをターゲットにします。
+     */
     @Inject
     private WebTarget target;
 
+    /**
+     * テストの後にメトリクスをクリアします。
+     */
+    @AfterAll
+    static void clear() {
+        MetricsFactory.closeAll();
+    }
+
+    /**
+     * ヘルスチェックエンドポイントのステータスコードを確認します。
+     */
 
     @Test
     void testHealth() {
@@ -38,6 +60,10 @@ class MainTest {
         assertThat(response.getStatus(), is(200));
     }
 
+    /**
+     * マイクロプロファイルメトリクスの動作を確認します。
+     * personalizedGets カウンタの増加を確認します。
+     */
     @Test
     void testMicroprofileMetrics() {
         Message message = target.path("simple-greet/Joe")
@@ -51,17 +77,14 @@ class MainTest {
         message = target.path("simple-greet/Eric")
                 .request()
                 .get(Message.class);
-
         assertThat(message.getMessage(), is("Hello Eric"));
         double after = counter.getCount();
         assertEquals(1d, after - before, "Difference in personalized greeting counter between successive calls");
     }
 
-    @AfterAll
-    static void clear() {
-        MetricsFactory.closeAll();
-    }
-
+    /**
+     * デフォルトの挨拶メッセージを確認します。
+     */
 
     @Test
     void testGreet() {
@@ -71,7 +94,10 @@ class MainTest {
                 .get(Message.class);
         assertThat(message.getMessage(), is("Hello World!"));
     }
-                
+
+    /**
+     * 挨拶メッセージの変更を確認します。
+     */
     @Test
     void testGreetings() {
         Message jsonMessage = target
@@ -93,5 +119,4 @@ class MainTest {
                 .get(Message.class);
         assertThat(jsonMessage.getMessage(), is("Hola Jose!"));
     }
-                
 }

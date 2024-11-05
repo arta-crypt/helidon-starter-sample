@@ -1,17 +1,10 @@
-
 package com.samples.helidon.starterapp;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -20,33 +13,33 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 /**
- * A simple JAX-RS resource to greet you. Examples:
- *
- * Get default greeting message:
+ * 簡単なJAX-RSリソースで、あなたを挨拶します。例：
+ * <p>
+ * デフォルトの挨拶メッセージを取得します：
  * curl -X GET http://localhost:8080/greet
- *
- * Get greeting message for Joe:
+ * <p>
+ * Joeへの挨拶メッセージを取得します：
  * curl -X GET http://localhost:8080/greet/Joe
- *
- * Change greeting
+ * <p>
+ * 挨拶を変更します
  * curl -X PUT -H "Content-Type: application/json" -d '{"greeting" : "Howdy"}' http://localhost:8080/greet/greeting
- *
- * The message is returned as a JSON object.
+ * <p>
+ * メッセージはJSONオブジェクトとして返されます。
  */
 @Path("/greet")
 @RequestScoped
 public class GreetResource {
 
     /**
-     * The greeting message provider.
+     * 挨拶メッセージプロバイダー。
      */
     private final GreetingProvider greetingProvider;
 
     /**
-     * Using constructor injection to get a configuration property.
-     * By default this gets the value from META-INF/microprofile-config
+     * コンストラクタインジェクションを使用して設定プロパティを取得します。
+     * デフォルトでは、META-INF/microprofile-configから値を取得します。
      *
-     * @param greetingConfig the configured greeting message
+     * @param greetingConfig 設定された挨拶メッセージ
      */
     @Inject
     public GreetResource(GreetingProvider greetingConfig) {
@@ -54,7 +47,7 @@ public class GreetResource {
     }
 
     /**
-     * Return a worldly greeting message.
+     * 世界への挨拶メッセージを返します。
      *
      * @return {@link Message}
      */
@@ -65,9 +58,9 @@ public class GreetResource {
     }
 
     /**
-     * Return a greeting message using the name that was provided.
+     * 提供された名前を使用して挨拶メッセージを返します。
      *
-     * @param name the name to greet
+     * @param name 挨拶する名前
      * @return {@link Message}
      */
     @Path("/{name}")
@@ -78,9 +71,9 @@ public class GreetResource {
     }
 
     /**
-     * Set the greeting to use in future messages.
+     * 将来のメッセージで使用する挨拶を設定します。
      *
-     * @param message Message containing the new greeting
+     * @param message 新しい挨拶を含むメッセージ
      * @return {@link Response}
      */
     @Path("/greeting")
@@ -90,7 +83,7 @@ public class GreetResource {
     @RequestBody(name = "greeting",
             required = true,
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(type = SchemaType.OBJECT, requiredProperties = { "greeting" })))
+                    schema = @Schema(type = SchemaType.OBJECT, requiredProperties = {"greeting"})))
     @APIResponses({
             @APIResponse(name = "normal", responseCode = "204", description = "Greeting updated"),
             @APIResponse(name = "missing 'greeting'", responseCode = "400",
